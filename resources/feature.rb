@@ -32,7 +32,9 @@ end
 
 private
 def locate_default_provider
-  if ::File.exists?(locate_sysnative_cmd('dism.exe'))
+  if  node["windows"].attribute?(:feature_provider)
+    :windows_feature_powershell
+  elsif ::File.exists?(locate_sysnative_cmd('dism.exe'))
     :windows_feature_dism
   elsif ::File.exists?(locate_sysnative_cmd('servermanagercmd.exe'))
     :windows_feature_servermanagercmd
