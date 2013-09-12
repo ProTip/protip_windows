@@ -20,7 +20,7 @@
 
 include Windows::Helper
 
-actions :install, :remove
+actions :install, :remove, :delete
 
 attribute :feature_name, :kind_of => String, :name_attribute => true
 
@@ -32,8 +32,8 @@ end
 
 private
 def locate_default_provider
-  if  node["windows"].attribute?(:feature_provider)
-    :windows_feature_powershell
+  if  node['windows'].attribute?(:feature_provider)
+    "windows_feature_#{node['windows']['feature_provider']}"
   elsif ::File.exists?(locate_sysnative_cmd('dism.exe'))
     :windows_feature_dism
   elsif ::File.exists?(locate_sysnative_cmd('servermanagercmd.exe'))

@@ -24,11 +24,23 @@ def remove_feature(name)
   Chef::Log.info(cmd.stdout)
 end
 
+def delete_feature(name)
+  cmd = powershell_out("Uninstall-WindowsFeature #{@new_resource.feature_name} -Remove")
+  Chef::Log.info(cmd.stdout)
+end
+
 def installed?
   @installed ||= begin
     #cmd = shell_out("#{dism} /online /Get-Features", {:returns => [0,42,127]})
     #cmd.stderr.empty? && (cmd.stdout =~  /^Feature Name : #{@new_resource.feature_name}.?$\n^State : Enabled.?$/i)
     cmd = powershell_out("Get-WindowsFeature #{@new_resource.feature_name} | Select Installed | % { Write-Host $_.Installed }")
     cmd.stderr.empty? &&  cmd.stdout =~ /True/i
+  end
+end
+
+def available?
+  @available ||= begin
+    cmd = powershell_out("Get-WindowsFeature #{@new_resource.feature_name}")
+    cmd.stderr.empty? && cmd.stdout !~ /Removed/i
   end
 end
