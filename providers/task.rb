@@ -30,11 +30,8 @@ action :create do
     cmd += "/SC #{@new_resource.frequency} "
     cmd += "/MO #{@new_resource.frequency_modifier} " if [:minute, :hourly, :daily, :weekly, :monthly].include?(@new_resource.frequency)
     cmd += "/TR \"#{@new_resource.command}\" "
-    if @new_resource.user && @new_resource.password
-      cmd += "/RU \"#{@new_resource.user}\" /RP \"#{@new_resource.password}\" "
-    elsif (@new_resource.user and !@new_resource.password) || (@new_resource.password and !@new_resource.user)
-      Chef::Log.fatal "#{@new_resource.name}: Can't specify user or password without both!"
-    end
+    cmd += "/RU \"#{@new_resource.user}\" " if @new_resource.user
+    cmd += "/RP \"#{@new_resource.password}\" " if @new_resource.user and @new_resource.password
     cmd += "/RL HIGHEST " if @new_resource.run_level == :highest
     shell_out!(cmd, {:returns => [0]})
     @new_resource.updated_by_last_action true
